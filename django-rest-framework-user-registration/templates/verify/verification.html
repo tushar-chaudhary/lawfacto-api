@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>SMS-Verification</title>
+	<meta charset="utf-8" /> {% load static %}
+	<link rel="stylesheet" href="{% static 'verify/css/bootstrap.min.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'verify/css/fonts.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'verify/css/styles.css' %}" type="text/css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body id="body">
+	<div id="backplate" class="container-fluid">
+		<div class="row">
+			<div class="col-sm-4"></div>
+			<div id="maintitle" class="col-sm-4 text-center center-block">
+				SMS VERIFICATION
+			</div>
+			<div class="col-sm-4"></div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-4 col-md-3 col-sm-2"></div>
+			<div id="phoneBlock" class="col-lg-4 col-md-6 col-sm-8">
+				<span id="phoneBarTitle"> Enter Verification Code </span><br>
+				<h1 id="phoneBar">
+					<input id="phoneInput" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input>
+				</h1>
+			</div>
+			<div class="col-lg-4 col-md-3 col-sm-2"></div>
+		</div>
+		<div class="row text-center">
+			<span id="message"></span>
+		</div>
+	</div>
+</body>
+
+
+
+<script>
+	// back plate sizing
+	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+		$('#backplate').height($(window).height() - 10);
+	} else {
+		$('#backplate').height($(window).height() - 100);
+	}
+
+
+	$("#phoneInput").keyup(function(e) {
+		if (e.keyCode == 13) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4 && xhttp.status == 200) {
+					var response = xhttp.responseText;
+					console.log(response);
+
+					if (response == "1") {
+						$("body").animate({
+							backgroundColor: "#20FFAD"
+						}, 500);
+
+						$("#message").css("color", "#20FFAD");
+						document.getElementById("message").innerHTML = "Verification Successful";
+					}
+					else {
+						$("body").animate({
+							backgroundColor: "#f5003c"
+						}, 500);
+
+						$("#message").css("color", "#f5003c");
+						document.getElementById("message").innerHTML = "Verification Failed";
+					}
+					document.getElementById('phoneInput').readOnly = true;
+				}
+			};
+			xhttp.open("GET", "/checkCode?code={{code}}&verification=" + document.getElementById("phoneInput").value, true);
+			xhttp.send();
+		}
+	});
+</script>
+
+</html>
